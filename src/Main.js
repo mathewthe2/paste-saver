@@ -21,7 +21,7 @@ class Main extends Component {
   componentDidMount() {
     ipcRenderer.on('save', ()=> {
       const t = clipboard.readText('selection');
-      if (t !== this.state.text) {
+      if (t !== this.state.text && t.length) {
         console.log(t);
         this.setState({text: t});
         postText({description:'unnamed',

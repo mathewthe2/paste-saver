@@ -1,3 +1,5 @@
+## Paste Saver
+
 Backup your clipboard so you won't lose your copied text anymore! 😻
 
 To start:

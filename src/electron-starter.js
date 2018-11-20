@@ -1,6 +1,6 @@
 const electron = require('electron');
 // Module to control application life.
-const app = electron.app;
+const {app, globalShortcut} = require('electron');
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -33,6 +33,17 @@ function createWindow() {
         // when you should delete the corresponding element.
         mainWindow = null
     })
+    setInterval(function(){
+        saveClipBoard();
+    }, 10);
+
+}
+
+function saveClipBoard() {
+    mainWindow.webContents.send('save', true);
+    // globalShortcut.register('ctrl+c', function () {
+    //     mainWindow.webContents.send('global-shortcut', true);
+    // });
 }
 
 // This method will be called when Electron has finished

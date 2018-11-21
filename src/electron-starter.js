@@ -35,7 +35,7 @@ function createWindow() {
     })
     setInterval(function(){
         saveClipBoard();
-    }, 10);
+    }, 100);
 
 }
 

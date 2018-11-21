@@ -16,13 +16,32 @@ const postText =  async (body) => fetch('https://api.paste.ee/v1/pastes', {
 });
 
 class Main extends Component {
-  state = {text: '', list: []}
+  state = {text: '', selectedText: {content: ''}, list: [], selected :0, copyConfirmation: false};
+
+  runSample() {
+    this.setState({list:[
+      {id: 1, link: '/2e2/ds', content: 'abcddasfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfef'},
+      {id: 2, link: '/2e2/ds', content: '22d'},
+      {id: 3, link: '/2e2/ds', content: 'abcdfddef'},
+      {id: 4, link: '/2e2/ds', content: 'abc222def'},
+    ]})
+  }
+
+  selectText = (text) =>this.setState({selectedText:text, copyConfirmation: false});
+  copyToClipBoard = (text) => {
+    clipboard.writeText(text);
+    this.setState({text, copyConfirmation: true});
+  }
 
   componentDidMount() {
     ipcRenderer.on('save', ()=> {
+      // this.runSample();
+      // return;
       const t = clipboard.readText('selection');
-      if (t !== this.state.text && t.length) {
-        console.log(t);
+      const selectedTextInApp = window.getSelection() && t === window.getSelection().toString();
+      if (selectedTextInApp) {
+        this.setState({text: window.getSelection().toString()});
+      } else if (t !== this.state.text && t.length) {
         this.setState({text: t});
         postText({description:'unnamed',
         sections:[{
@@ -38,16 +57,32 @@ class Main extends Component {
   });
   }
   render() {
+    
+    var disabledShowText = !this.state.selectedText.content;
 
     return (
-     this.state.list.map(text=>
-      <li key={text.id}>
-      <a href={text.link} target="_blank">
-        {text.content.substring(0,20)}
-        {text.content.length > 20 && '...'}
-      </a>
-     </li>
-    )
+      <div style={{padding: 16}}>
+        <div style={{  cursor: 'pointer', position: 'absolute', height: 400, overflow: 'auto'}} >
+      {this.state.list.map((text, index)=>
+        <div style={{background: index % 2 === 0 ? 'rgba(243,243,243,1)' : '#FFFF'}}
+        key={text.id} onClick={()=>this.selectText(text)}>
+          {text.content.substring(0,20)}
+          {text.content.length > 20 && '...'}
+      </div>
+    )}
+    </div>
+      <div style={{position: 'absoolute', marginLeft: 200}}>
+      <div>
+        <button disabled={disabledShowText} onClick={()=>this.copyToClipBoard(this.state.selectedText.content)}>Copy</button>
+       {this.state.copyConfirmation && <text style={{marginLeft: 4}}>Copied!</text>}
+        </div> 
+        <textarea disabled={disabledShowText}style={{marginTop: 8, minHeight:300, minWidth: 300}}
+          value={this.state.selectedText.content} />
+          <div>
+            <a href={this.state.selectedText.link} target='_blank'>View Online</a>
+        </div>
+      </div>
+     </div>
     )
   }
 }
